@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="resources/icon.png" width="128" height="128">
+  <img src="resources/icon.png" width="256" height="256">
 </p>
 
 <h1 align="center">FireDoc</h1>
