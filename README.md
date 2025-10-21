@@ -1,61 +1,37 @@
-# FireDoc 📄<p align=center>
+<p align="center">
+  <img src="resources/icon.png" width="128" height="128">
+</p>
 
-    <img src="resources/banner.png" width="65%" height="65%">
+<h1 align="center">FireDoc</h1>
 
-<p align="center"></p>
+<p align="center">A beautiful, minimalist PDF viewer and editor for Firefox with a distraction-free interface</p>
 
-    <img src="resources/logo.png" width="65%" height="65%">
+---
 
-
-
-> A beautiful, minimalist PDF viewer and editor for Firefox with a distraction-free interface## What is this?
+## What is this?
 
 Firefox comes with a great built-in PDF viewer and editor, but using it solely as a PDF reader may not be visually appealing due to its web browser user interface. Fortunately, the FireDoc installation script can create a separate profile dedicated to reading and editing PDFs. Additionally, the script adds custom CSS to hide the browser's UI elements, giving the appearance of a dedicated PDF reader.
 
-FireDoc transforms Firefox's built-in PDF viewer into a dedicated PDF reading application by creating a separate profile with custom styling that hides all browser UI elements, giving you a clean, focused reading experience.
+## ✨ Features
 
-## Installation
-
-## ✨ Features```console
-
-$ git clone https://github.com/ZeNx98/firedoc
-
-### 🎨 **Beautiful User Interface**$ cd firedoc
-
-- **Custom Start Page** - Modern, gradient-styled landing page with drag-and-drop support$ bash install.sh
-
-- **Dark Theme** - Eye-friendly dark interface optimized for readingTested on Linux with i3wm and KDE. Can't guarantee this will be visually pleasing on other operating systems or desktop environments. Feel free to send PRs if you have a solution for supporting other operating systems and desktop environments
-
+### 🎨 **Beautiful User Interface**
+- **Custom Start Page** - Modern, gradient-styled landing page with drag-and-drop support
+- **Dark Theme** - Eye-friendly dark interface optimized for reading
 - **Smooth Animations** - Polished transitions and hover effects
 
-## Usage
-
-### 📚 **Recent Files Management**1. Launch it from your application launcher
-
-- **Smart Thumbnails** - Automatic first-page preview generation for quick file identification2. Open a PDF from your file browser by right clicking and selecting FireDoc
-
-- **Persistent History** - Recent files saved across browser sessions3. Execute `firedoc FILE`
-
+### 📚 **Recent Files Management**
+- **Smart Thumbnails** - Automatic first-page preview generation for quick file identification
+- **Persistent History** - Recent files saved across browser sessions
 - **File Metadata** - Shows filename, size, and last opened timestamp
+- **Quick Access** - Click any recent file to reopen it
+- **Clear History** - Remove individual files or clear all history
 
-- **Quick Access** - Click any recent file to reopen it## Highly customizable!
-
-- **Clear History** - Remove individual files or clear all historyFireDoc stores it's config files in `~/.config/firedoc/` and contains the following files
-
-
-
-### 🚀 **Performance Optimized**- [`icon.png`](resoureces/icon.png) - The icon of app when you launch it from your application launcher or right click in file explorer to open a PDF
-
-- **Chunked Reading** - Only loads first 5MB of PDFs for thumbnail generation- [`startpage.html`](resources/startpage.html) - This is the UI you see when you open FireDoc without opening a PDF file
-
+### 🚀 **Performance Optimized**
+- **Chunked Reading** - Only loads first 5MB of PDFs for thumbnail generation
 - **Efficient Storage** - Stores only thumbnails (~10-20KB each), not full files
-
-- **Large File Support** - Works with PDFs of any size (tested with 500MB+ files)## Author
-
+- **Large File Support** - Works with PDFs of any size (tested with 500MB+ files)
 - **Smart Timeouts** - Graceful fallbacks if preview generation takes too long
-
-- **Memory Efficient** - Minimal resource usage even with multiple large filesCreated by [ZeNx98](https://github.com/ZeNx98)
-
+- **Memory Efficient** - Minimal resource usage even with multiple large files
 
 ### 🎯 **Enhanced Functionality**
 - **Drag & Drop** - Simply drag PDF files onto the window
@@ -74,14 +50,14 @@ $ git clone https://github.com/ZeNx98/firedoc
 
 ### Prerequisites
 - Firefox browser
-- Linux operating system (tested on i3wm and KDE)
+- Linux operating system (tested on KDE)
 - Git
 
 ### Quick Install
 ```bash
 # Clone the repository
-git clone https://github.com/sdushantha/ff-pdf
-cd FireDoc
+git clone https://github.com/ZeNx98/firedoc
+cd firedoc
 
 # Run the installation script
 bash install.sh
@@ -117,7 +93,6 @@ firedoc
 
 # Open a specific PDF
 firedoc /path/to/document.pdf
-
 ```
 
 ### Method 4: Drag and Drop
@@ -217,8 +192,6 @@ Contributions are welcome! Please feel free to submit a Pull Request. Areas for 
 
 - [ ] Support for other operating systems (Windows, macOS)
 - [ ] Additional keyboard shortcuts
-- [ ] Bookmarking system
-- [ ] PDF annotation features
 - [ ] Theme customization UI
 - [ ] Multi-language support
 
@@ -228,9 +201,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👤 Author
 
-**Created with ❤️ by [ZeNx98](https://github.com/ZeNx98)**
-
-Original concept by [sdushantha](https://github.com/sdushantha)
+Created with ❤️ by [ZeNx98](https://github.com/ZeNx98)
 
 ## 🙏 Acknowledgments
 
@@ -238,19 +209,6 @@ Original concept by [sdushantha](https://github.com/sdushantha)
 - [IBM Plex Sans Arabic](https://github.com/IBM/plex) - Beautiful font family
 - Firefox team for the excellent built-in PDF viewer
 
-## 📸 Screenshots
-
-### Start Page
-Beautiful landing page with drag-and-drop support and recent files
-
-### Recent Files
-Thumbnail previews of recently opened PDFs with metadata
-
-### PDF Viewer
-Clean, distraction-free PDF reading experience
-
 ---
 
 **Star ⭐ this repository if you find it useful!**
-
-For issues, questions, or suggestions, please [open an issue](https://github.com/sdushantha/ff-pdf/issues) on GitHub.
