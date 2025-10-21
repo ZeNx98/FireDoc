@@ -118,12 +118,7 @@ FireDoc stores its configuration files in `~/.config/firedoc/` with the followin
 ~/.config/firedoc/
 ├── icon.png              # Application icon
 ├── startpage.html        # Custom start page UI
-├── user.js              # Firefox preferences
-├── userChrome.css       # Custom CSS for hiding UI
-└── IBM_Plex_Sans_Arabic/ # Local font files
-    ├── IBMPlexSansArabic-Regular.ttf
-    ├── IBMPlexSansArabic-Bold.ttf
-    └── ...
+
 ```
 
 ### Customizing the Start Page
@@ -132,15 +127,6 @@ Edit `~/.config/firedoc/startpage.html` to customize:
 - Layout and styling  
 - Welcome message
 - Feature cards
-
-### Customizing the Icon
-Replace `~/.config/firedoc/icon.png` with your own icon (recommended size: 512x512px)
-
-### CSS Customization
-Edit `~/.config/firedoc/userChrome.css` to modify:
-- Browser UI visibility
-- PDF viewer appearance
-- Custom styling
 
 ## 🔧 Technical Details
 
@@ -153,12 +139,11 @@ Edit `~/.config/firedoc/userChrome.css` to modify:
 ### Storage Limits
 - **Recent Files**: Up to 10 files (configurable)
 - **Thumbnail Size**: ~10-20KB per file
-- **Preview Generation**: First 5MB of PDF file
 - **Total Storage**: ~5MB for all thumbnails (localStorage limit)
 
 ### Browser Compatibility
 - **Tested**: Firefox (latest versions)
-- **Platform**: Linux (i3wm, KDE)
+- **Platform**: Linux 
 - **Note**: May require adjustments for other platforms
 
 ## 🐛 Troubleshooting
@@ -202,11 +187,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 👤 Author
 
 Created with ❤️ by [ZeNx98](https://github.com/ZeNx98)
+Orginal work by[sdushantha](https://github.com/sdushantha)
 
 ## 🙏 Acknowledgments
 
 - [Mozilla PDF.js](https://mozilla.github.io/pdf.js/) - PDF rendering engine
-- [IBM Plex Sans Arabic](https://github.com/IBM/plex) - Beautiful font family
 - Firefox team for the excellent built-in PDF viewer
 
 ---
