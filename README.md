@@ -46,6 +46,17 @@ Firefox comes with a great built-in PDF viewer and editor, but using it solely a
 - **Isolated Profile** - Separate Firefox profile for PDF viewing
 - **No Tracking** - Completely private PDF reading experience
 
+## 🖼️ Screenshots
+
+<p align="center">
+  <img src="resources/screenshot1.png" width="400">
+  <img src="resources/screenshot2.png" width="400">
+</p>
+
+<p align="center">
+  <em>Left: Start page • Right: PDF viewer interface</em>
+</p>
+
 ## 📦 Installation
 
 ### Prerequisites
