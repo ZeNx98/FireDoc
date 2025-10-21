@@ -203,4 +203,6 @@ Modified and maintained by [ZeNx98](https://github.com/ZeNx98)
 
 ---
 
+This project was heavily vibe coded!
+
 **Star ⭐ this repository if you find it useful!**
