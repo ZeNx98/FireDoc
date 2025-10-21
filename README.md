@@ -4,9 +4,7 @@
 
 <p align="center"></p>
 
-    <img src="resources/banner.png" width="65%" height="65%">
-
-</p>https://github.com/sherlock-project/sherlock/assets/27065646/441ed266-ef4f-4219-8271-8c63b57f960d
+    <img src="resources/logo.png" width="65%" height="65%">
 
 
 
