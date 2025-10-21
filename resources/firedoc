@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+#
+# by ZeNx98
+#
+# CLI program for FireDoc
+# https://github.com/ZeNx98/firedoc
+#
+
+STARTPAGE="$HOME/.config/firedoc/startpage.html"
+PROFILE="FIREDOC_PROFILE"
+
+if printf %b "$1" | grep -Eq "(-h|--help)";then
+    echo "Usage: firedoc FILE"
+    exit
+fi
+
+# Open STARTPAGE if now file is provided
+file_path="${1:-$STARTPAGE}"
+if command -v firefox > /dev/null; then 
+    firefox --profile "$PROFILE" --new-window "$file_path"
+elif command -v librewolf > /dev/null; then 
+    librewolf --profile "$PROFILE" --new-window "$file_path"
+fi
+

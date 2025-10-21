@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Service
+ServiceTypes=KonqPopupMenu/Plugin
+MimeType=application/pdf;
+Actions=openwithfiredoc;
+
+[Desktop Action openwithfiredoc]
+Name=Open with FireDoc
+Icon=firefox
+Exec=/absolute/path/to/firedoc %F

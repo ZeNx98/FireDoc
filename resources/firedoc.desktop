@@ -1,0 +1,11 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Name=FireDoc
+Comment=Customized Firefox profile modified so that it can be used as dedicated PDF reader
+Exec=FIREDOC_COMMAND %f
+Icon=ICON_FILE_PATH
+StartupWMClass=firedoc
+Terminal=false
+Type=Application
+MimeType=application/pdf
+Categories=Utility,Office,Education

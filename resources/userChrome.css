@@ -1,0 +1,46 @@
+/* Hide the tabs toolbar but keep title bar */
+#TabsToolbar {
+  visibility: collapse !important;
+}
+
+/* Show the title bar with window controls */
+#titlebar {
+  appearance: auto !important;
+  visibility: visible !important;
+}
+
+/* Ensure window control buttons are always visible */
+.titlebar-buttonbox-container {
+  visibility: visible !important;
+  display: flex !important;
+}
+
+.titlebar-button {
+  visibility: visible !important;
+  display: block !important;
+}
+
+/* Keep the title bar placeholder visible */
+#titlebar-spacer {
+  visibility: visible !important;
+}
+
+/* Hide the header of the sidebar panel */
+#sidebar-header {
+  visibility: collapse;
+}
+
+/* Hide url bar */
+#nav-bar {
+  visibility: collapse;
+}
+
+/* Hide the menu bar */
+#toolbar-menubar {
+  visibility: collapse;
+}
+
+/* Hide bookmarks toolbar */
+#PersonalToolbar {
+  visibility: collapse;
+}
