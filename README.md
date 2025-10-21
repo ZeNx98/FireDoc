@@ -118,7 +118,6 @@ FireDoc stores its configuration files in `~/.config/firedoc/` with the followin
 ~/.config/firedoc/
 ├── icon.png              # Application icon
 ├── startpage.html        # Custom start page UI
-
 ```
 
 ### Customizing the Start Page
@@ -182,12 +181,9 @@ Contributions are welcome! Please feel free to submit a Pull Request. Areas for 
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 👤 Author
-
-Created with ❤️ by [ZeNx98](https://github.com/ZeNx98)
-Orginal work by[sdushantha](https://github.com/sdushantha)
+This project is licensed under the MIT License.  
+Original work by [sdushantha](https://github.com/sdushantha)  
+Modified and maintained by [ZeNx98](https://github.com/ZeNx98)
 
 ## 🙏 Acknowledgments
 
