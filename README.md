@@ -1,137 +1,132 @@
-# FireDoc — Minimalist PDF Viewer (Electron + pdf.js)
+<p align="center">
+  <img src="icon.png" width="256" height="256">
+</p>
 
-FireDoc is a clean, fast PDF viewer for desktop built with Electron, using the embedded pdf.js viewer (`pdfjs/web/viewer.html`).
+<h1 align="center">FireDoc</h1>
 
-On launch, it opens a polished homepage where you can pick a PDF (native dialog, drag & drop, or from a recent list). You can also open PDFs directly from your file manager via “Open With FireDoc” or by double‑clicking if set as default.
+**A minimalist, privacy-focused PDF viewer built with Electron and Mozilla's PDF.js**
 
-## Features
+## What is FireDoc?
 
-- Open local PDFs instantly with the bundled pdf.js viewer
-- Drag & drop support and native file picker
-- Recent files list with lightweight thumbnails (no files stored — just tiny previews)
-- Open via command line: `firedoc <file.pdf>`
-- Single‑instance routing: subsequent opens focus the app and load the file
-- System integration on Linux: desktop entry + file association for `application/pdf`
-- Privacy‑friendly: everything stays local; nothing uploaded
+Firefox’s built-in PDF viewer is solid, but its browser interface can feel cluttered for reading. FireDoc fixes that by being fully standalone—built with Electron and PDF.js—with no Firefox, no browser UI, no cloud services, and no tracking. Just a clean, lightweight app that runs entirely on your device, giving you a fast, distraction-free way to read and edit PDFs.
 
-## Prerequisites
+##  Features
 
-- Node.js 18+ (recommended)
+- **Minimalist Interface** — Clean design inspired by Firefox
+- **Recent Files Panel** — Automatic thumbnails and quick reopening of recent documents
+- **Dark Theme** — Easy on the eyes with Firefox-inspired colors
+- **File Associations** — Set FireDoc as your default PDF viewer
+- **Offline First** — Works completely offline, no internet required
+- **Cross-Platform** — Built with Electron for Linux (Windows/Mac support coming soon!)
+  
+--
 
-## Install and run (dev)
+## 🖼️ Screenshots
 
+<p align="center">
+  <img src="img/screenshot1.png" width="400">
+  <img src="img/screenshot2.png" width="400">
+</p>
+
+<p align="center">
+  <em>Left: Start page • Right: PDF viewer interface</em>
+</p>
+
+---
+
+## 🚀 Quick Install
+
+**The easiest way to install FireDoc is to download a pre-built release:**
+
+👉 **[Download FireDoc from Releases](https://github.com/ZeNx98/FireDoc/releases)**
+
+Choose the installer for your operating system:
+- **Linux**: `.deb` (Debian/Ubuntu) or `.AppImage` (universal)
+- **More platforms coming soon!**
+
+### Installation Steps
+
+#### Debian/Ubuntu (.deb)
 ```sh
-# From the project root
-npm install
-npm start
+# Download the .deb file from releases, then:
+sudo dpkg -i FireDoc-2.0.0-amd64.deb
 ```
 
-This opens an Electron window with the homepage. Use the “Choose PDF File” button or drag & drop a PDF to open it.
-
-## Build packages (Linux)
-
-We use electron-builder and ship Linux targets: deb, AppImage, and pacman (Arch).
-
+#### Universal Linux (AppImage)
 ```sh
-# Build all Linux targets
-npm run dist:linux
-
-# Or build a specific target
-npm run dist:deb       # Debian/Ubuntu .deb
-npm run dist:appimage  # AppImage
-npm run dist:arch      # Arch Linux .pacman
+# Download the .AppImage, make it executable, and run:
+chmod +x FireDoc-2.0.0-x86_64.AppImage
+./FireDoc-2.0.0-x86_64.AppImage
 ```
 
-Artifacts will appear in the `dist/` folder, named like `FireDoc-2.0.0-x64.deb`, `FireDoc-2.0.0-x64.AppImage`, or `FireDoc-2.0.0-x64.pacman`.
 
-## Open With on Linux and default app
+## 📖 How to Use
 
-FireDoc now accepts a PDF path from the command line and as a second instance argument. That means you can:
+1. **Launch FireDoc** from your applications menu or by double-clicking the desktop icon.
+2. **Open a PDF** by:
+   - Clicking "Choose PDF File" button
+   - Dragging and dropping a PDF onto the window
+   - Pressing `O` on your keyboard
+   - Clicking a recent file from your history
+3. **View your PDF** with all the features of Mozilla's PDF.js viewer:
+   - Zoom in/out
+   - Navigate pages
+   - Search text
+   - Print documents
+   - Toggle sidebar for thumbnails and outline
 
-- Run `firedoc /path/to/file.pdf` and it will open directly
-- Use your file manager’s “Open With → FireDoc” for PDFs
-- Use `xdg-open file.pdf` if FireDoc is set as the handler
+### Keyboard Shortcuts
 
-When installing a package built via electron-builder (`.deb`, `.AppImage` with desktop integration, or `.pacman`), a desktop entry with `MimeType=application/pdf;` is generated automatically from the `build.fileAssociations` config.
+| Shortcut | Action |
+|----------|--------|
+| `O` | Open file dialog |
+| `?` or `/` | Show keyboard shortcuts |
+| Drag & Drop | Drop PDF files anywhere |
 
-If your desktop environment didn’t pick it up yet, update the database:
 
-```sh
-update-desktop-database ~/.local/share/applications || true
-```
+---
 
-Optionally set FireDoc as default for PDFs:
+## 🤝 Contributing
 
-```sh
-xdg-mime default firedoc.desktop application/pdf
-```
+**Contributions are welcome!** We'd especially love help with:
 
-### Manual desktop entry (no package manager)
+- ** Supporting more platforms** — Windows and macOS builds
+- ** Translations** — Multi-language support
+- ** UI/UX improvements** — Design enhancements and accessibility
+- ** Bug fixes** — Testing and reporting issues
+- ** Documentation** — Better guides and tutorials
 
-If you’re using the AppImage directly, you can register FireDoc as a handler manually using the provided `firedoc.desktop` in this repo.
+### How to Contribute
 
-```sh
-# Copy desktop file to your local applications dir
-install -D -m 0644 ./firedoc.desktop "$HOME/.local/share/applications/firedoc.desktop"
+1. **Fork** the repository
+2. **Create a branch** for your feature: `git checkout -b feature/amazing-feature`
+3. **Make your changes** and test with `npm run start`
+4. **Commit** your changes: `git commit -m 'Add amazing feature'`
+5. **Push** to your fork: `git push origin feature/amazing-feature`
+6. **Open a Pull Request** describing your changes
 
-# Refresh desktop database and set as default for PDFs
-update-desktop-database "$HOME/.local/share/applications" || true
-xdg-mime default firedoc.desktop application/pdf
+Please keep changes focused and well-documented. Small, incremental improvements are easier to review!
 
-# Verify
-xdg-mime query default application/pdf
-```
+---
 
-Make sure the `Exec=` path inside `firedoc.desktop` points to your AppImage location (defaults to `dist/FireDoc-2.0.0-x86_64.AppImage`). Update it if you move/rename the file.
+## License
 
-## Open a different PDF
+This project is licensed under the terms in the [LICENSE](./LICENSE) file.
 
-There are a few options:
+FireDoc uses **Mozilla PDF.js** which is licensed under Apache 2.0. See `pdfjs/LICENSE` for details.
 
-- Use the homepage “Choose PDF File” button (native dialog)
-- Drag and drop a PDF onto the homepage
-- Use the viewer UI: Click the folder icon in the viewer toolbar to open a file picker and select a local PDF
+---
 
-## Notes
+## Acknowledgements
 
-- The app sets `allow-file-access-from-files` and disables `webSecurity` so the viewer (loaded with `file://`) can fetch local assets and PDFs. For production, consider serving `pdfjs/web/` via a local HTTP server or a custom Electron protocol for stricter security.
-- The pdf.js assets are already present under `pdfjs/` in this repository.
+- Built with **[Mozilla PDF.js](https://github.com/mozilla/pdf.js)** — Industry-leading PDF rendering
+- Built with **[Electron](https://www.electronjs.org/)** — Cross-platform desktop framework
+- Inspired by Firefox's clean, minimalist design philosophy
 
-## Project structure
+---
 
-- `main.js` — Electron main process (starts at `homepage.html`, then navigates to the pdf.js viewer). Supports command‑line file open and single‑instance routing.
-- `preload.js` — Exposes `electronAPI.selectPDF()` and `electronAPI.openPDF()` to the homepage
-- `pdfjs/` — pdf.js distribution including `web/viewer.html`
-- `homepage.html` — Start screen to pick a PDF (drag & drop, recent files)
-- `firedoc.desktop` — Desktop entry template for Linux Open‑With and default app setup
+Project is vibe coded
 
-## Project structure
+---
 
-- `main.js` — Electron main process (starts at `homepage.html`, then navigates to the pdf.js viewer). Uses `icon.png` as the app icon.
-- `preload.js` — Exposes `electronAPI.selectPDF()` and `electronAPI.openPDF()` to the homepage
-- `pdfjs/` — pdf.js distribution including `web/viewer.html`
-- `homepage.html` — Start screen to pick a PDF
-
-## Credits
-
-FireDoc is created by [ZeNx98](https://github.com/ZeNx98).
-
-- Email: zenx98x@gmail.com
-- GitHub: https://github.com/ZeNx98/FireDoc
-
-## Troubleshooting
-
-- Blank screen or errors about CORS/file access: ensure you're launching via `npm start` (Electron), not directly double-clicking `viewer.html`.
-- If your PDF path has spaces, use a `file://` URL or encode it when setting the `file` query param.
-
-If you encounter AppImage packaging errors about file associations, ensure your `package.json` has:
-
-```jsonc
-{
-	"build": {
-		"fileAssociations": [
-			{ "ext": "pdf", "mimeType": "application/pdf", "name": "PDF document", "role": "Viewer" }
-		]
-	}
-}
-```
+**Made with ❤️ by [ZeNx98](https://github.com/ZeNx98)**
