@@ -19,7 +19,7 @@ Firefox’s built-in PDF viewer is solid, but its browser interface can feel clu
 - **Offline First** — Works completely offline, no internet required
 - **Cross-Platform** — Built with Electron for Linux (Windows/Mac support coming soon!)
   
---
+---
 
 ## 🖼️ Screenshots
 
@@ -111,7 +111,7 @@ Please keep changes focused and well-documented. Small, incremental improvements
 
 ## License
 
-This project is licensed under the terms in the [LICENSE](./LICENSE) file.
+This project is licensed under MIT License in the [LICENSE](./LICENSE) file.
 
 FireDoc uses **Mozilla PDF.js** which is licensed under Apache 2.0. See `pdfjs/LICENSE` for details.
 
