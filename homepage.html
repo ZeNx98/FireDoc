@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="FireDoc - A minimalist PDF viewer for Firefox">
+    <title>FireDoc - PDF Viewer</title>
+    <link rel="icon" type="image/png" href="icon.png">
+    <script src="pdf-loader.js" type="module"></script>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --bg-primary: #2b2a33;
+        --bg-secondary: #1f1e26;
+        --bg-dropzone: #35343d;
+        --text-primary: #e8e6e3;
+        --text-secondary: #93969b;
+        --text-muted: #5a5d62;
+        --border-color: #3c4043;
+        --border-active: #5865f2;
+        --accent-color: #5865f2;
+        --accent-hover: #4752c4;
+        --success-color: #43b581;
+        --danger-color: #f04747;
+        --border-radius: 8px;
+        --transition-speed: 0.3s;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'IBM Plex Sans Arabic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+        color: var(--text-primary);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 20px;
+        position: relative;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 50px;
+        animation: fadeInDown 0.6s ease-out;
+      }
+
+      .header-logo {
+        width: 120px;
+        height: 120px;
+        margin-bottom: 20px;
+        filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+        transition: transform var(--transition-speed) ease;
+      }
+
+      .header-logo:hover {
+        transform: scale(1.05) rotate(5deg);
+      }
+
+      .header h1 {
+        font-size: clamp(2em, 5vw, 3em);
+        color: var(--text-primary);
+        margin-bottom: 10px;
+        font-weight: 700;
+        letter-spacing: -1px;
+      }
+
+      .header p {
+        font-size: 1.1em;
+        color: var(--text-secondary);
+        font-weight: 300;
+      }
+
+      .main-content {
+        width: 100%;
+        max-width: 600px;
+        animation: fadeInUp 0.6s ease-out;
+      }
+
+      .dropzone {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        min-height: 280px;
+        background: var(--bg-dropzone);
+        border: 3px dashed var(--border-color);
+        border-radius: var(--border-radius);
+        padding: 40px;
+        text-align: center;
+        cursor: pointer;
+        transition: all var(--transition-speed) ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .dropzone::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at center, rgba(88, 101, 242, 0.1) 0%, transparent 70%);
+        opacity: 0;
+        transition: opacity var(--transition-speed) ease;
+      }
+
+      .dropzone:hover,
+      .dropzone.drag-over {
+        border-color: var(--border-active);
+        background: rgba(88, 101, 242, 0.05);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      }
+
+      .dropzone:hover::before,
+      .dropzone.drag-over::before {
+        opacity: 1;
+      }
+
+      .dropzone-content {
+        position: relative;
+        z-index: 1;
+      }
+
+      .dropzone-icon {
+        font-size: 3.5em;
+        margin-bottom: 20px;
+        opacity: 0.7;
+      }
+
+      .file-input {
+        display: none;
+      }
+
+      .file-input-label {
+        display: inline-block;
+        padding: 14px 32px;
+        background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
+        color: #fff;
+        font-size: 1.1em;
+        font-weight: 600;
+        text-align: center;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        transition: all var(--transition-speed) ease;
+        box-shadow: 0 4px 12px rgba(88, 101, 242, 0.3);
+        margin-bottom: 15px;
+      }
+
+      .file-input-label:hover {
+        background: linear-gradient(135deg, var(--accent-hover) 0%, var(--accent-color) 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(88, 101, 242, 0.4);
+      }
+
+      .file-input-label:active {
+        transform: translateY(0);
+      }
+
+      .dropzone-text {
+        font-size: 1.1em;
+        color: var(--text-secondary);
+        margin-bottom: 10px;
+      }
+
+      .dropzone-hint {
+        font-size: 0.9em;
+        color: var(--text-muted);
+      }
+
+      .file-info {
+        margin-top: 30px;
+        padding: 20px;
+        background: var(--bg-secondary);
+        border-radius: var(--border-radius);
+        border-left: 4px solid var(--success-color);
+        display: none;
+        animation: slideIn 0.4s ease-out;
+      }
+
+      .file-info.active {
+        display: block;
+      }
+
+      .file-info-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-size: 0.95em;
+      }
+
+      .file-info-label {
+        color: var(--text-secondary);
+        font-weight: 500;
+      }
+
+      .file-info-value {
+        color: var(--text-primary);
+        font-weight: 600;
+      }
+
+      .recent-files {
+        margin-top: 40px;
+        width: 100%;
+      }
+
+      .recent-files-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .recent-files-title {
+        font-size: 1.3em;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .clear-history-btn {
+        background: transparent;
+        color: var(--text-secondary);
+        border: 1px solid var(--border-color);
+        padding: 6px 14px;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-size: 0.85em;
+        transition: all var(--transition-speed) ease;
+      }
+
+      .clear-history-btn:hover {
+        background: var(--danger-color);
+        border-color: var(--danger-color);
+        color: #fff;
+      }
+
+      .recent-files-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .recent-file-item {
+        background: var(--bg-secondary);
+        padding: 16px 20px;
+        border-radius: var(--border-radius);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all var(--transition-speed) ease;
+        border: 1px solid transparent;
+        cursor: pointer;
+        position: relative;
+      }
+
+      .recent-file-item:hover {
+        border-color: var(--border-active);
+        transform: translateX(4px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+      }
+
+      .file-preview {
+        display: none !important;
+      }
+
+      .recent-file-info {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .recent-file-thumbnail {
+        width: 80px;
+        height: 100px;
+        min-width: 80px;
+        background: var(--bg-dropzone);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        position: relative;
+      }
+
+      .recent-file-thumbnail img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .recent-file-thumbnail-placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 2em;
+        opacity: 0.5;
+        gap: 5px;
+      }
+
+      .recent-file-thumbnail-text {
+        font-size: 0.35em;
+        text-align: center;
+        color: var(--text-secondary);
+      }
+
+      .recent-file-details {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .recent-file-name {
+        font-size: 1em;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+        word-break: break-word;
+      }
+
+      .recent-file-meta {
+        font-size: 0.85em;
+        color: var(--text-secondary);
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .recent-file-actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .action-btn {
+        background: var(--bg-dropzone);
+        border: 1px solid var(--border-color);
+        color: var(--text-secondary);
+        padding: 8px 12px;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-size: 0.9em;
+        transition: all var(--transition-speed) ease;
+      }
+
+      .action-btn:hover {
+        background: var(--accent-color);
+        border-color: var(--accent-color);
+        color: #fff;
+      }
+
+      .action-btn.delete:hover {
+        background: var(--danger-color);
+        border-color: var(--danger-color);
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--text-secondary);
+      }
+
+      .empty-state-icon {
+        font-size: 3em;
+        margin-bottom: 15px;
+        opacity: 0.5;
+      }
+
+      .empty-state-text {
+        font-size: 1em;
+        line-height: 1.6;
+      }
+
+      .footer {
+        text-align: center;
+        margin-top: 60px;
+        padding: 20px;
+        color: var(--text-muted);
+        font-size: 0.9em;
+      }
+
+      .footer a {
+        color: var(--accent-color);
+        text-decoration: none;
+        font-weight: 600;
+        transition: color var(--transition-speed) ease;
+      }
+
+      .footer a:hover {
+        color: var(--accent-hover);
+        text-decoration: underline;
+      }
+
+      .footer-links {
+        margin-top: 10px;
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .shortcuts-toggle {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 1.5em;
+        transition: all var(--transition-speed) ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      }
+
+      .shortcuts-toggle:hover {
+        background: var(--accent-color);
+        border-color: var(--accent-color);
+        transform: scale(1.1);
+      }
+
+      @keyframes fadeInDown {
+        from {
+          opacity: 0;
+          transform: translateY(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateX(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .header-logo {
+          width: 90px;
+          height: 90px;
+        }
+
+        .dropzone {
+          min-height: 240px;
+          padding: 30px 20px;
+        }
+
+        .shortcuts-toggle {
+          bottom: 15px;
+          right: 15px;
+          width: 45px;
+          height: 45px;
+        }
+
+        .file-preview {
+          display: none;
+        }
+
+        .recent-file-actions {
+          flex-direction: column;
+        }
+
+        .recent-file-thumbnail {
+          width: 60px;
+          height: 75px;
+          min-width: 60px;
+        }
+
+        .recent-file-name {
+          font-size: 0.9em;
+        }
+
+        .recent-file-meta {
+          font-size: 0.8em;
+        }
+      }
+
+      .spinner {
+        display: none;
+        width: 40px;
+        height: 40px;
+        border: 4px solid var(--border-color);
+        border-top-color: var(--accent-color);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin: 20px auto;
+      }
+
+      .spinner.active {
+        display: block;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+
+      body::-webkit-scrollbar,
+      .container::-webkit-scrollbar {
+        width: 12px;
+        height: 12px;
+      }
+
+      body::-webkit-scrollbar-track,
+      .container::-webkit-scrollbar-track {
+        background: var(--bg-secondary);
+        border-radius: 12px;
+      }
+
+      body::-webkit-scrollbar-thumb,
+      .container::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, var(--text-muted), rgba(88, 101, 242, 0.65));
+        border-radius: 12px;
+        border: 2px solid var(--bg-secondary);
+        transition: background 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      body::-webkit-scrollbar-thumb:hover,
+      .container::-webkit-scrollbar-thumb:hover {
+        background: #5865f2;
+        box-shadow: 0 0 0 2px rgba(88, 101, 242, 0.25) inset;
+      }
+
+      body::-webkit-scrollbar-corner,
+      .container::-webkit-scrollbar-corner { background: var(--bg-secondary); }
+
+      * { scrollbar-color: var(--text-muted) var(--bg-secondary); scrollbar-width: thin; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <img src="icon.png" alt="FireDoc Logo" class="header-logo">
+        <h1>FireDoc</h1>
+        <p>Minimalist PDF Viewer for Firefox</p>
+      </header>
+      
+      <main class="main-content">
+        <div class="dropzone" id="dropzone">
+          <div class="dropzone-content">
+            <div class="dropzone-icon">📄</div>
+            <input type="file" class="file-input" id="file-input" accept="application/pdf" multiple>
+            <label for="file-input" class="file-input-label">Choose PDF File</label>
+            <p class="dropzone-text">or drag and drop here</p>
+            <p class="dropzone-hint">Supports .pdf files</p>
+          </div>
+        </div>
+        <div class="spinner" id="spinner"></div>
+        <div class="file-info" id="file-info">
+          <div class="file-info-item">
+            <span class="file-info-label">File Name:</span>
+            <span class="file-info-value" id="file-name">-</span>
+          </div>
+          <div class="file-info-item">
+            <span class="file-info-label">File Size:</span>
+            <span class="file-info-value" id="file-size">-</span>
+          </div>
+          <div class="file-info-item">
+            <span class="file-info-label">Status:</span>
+            <span class="file-info-value" id="file-status">Ready to open</span>
+          </div>
+        </div>
+
+        <section class="recent-files" id="recent-files-section">
+          <div class="recent-files-header">
+            <h2 class="recent-files-title">📚 Recent Files</h2>
+            <button class="clear-history-btn" id="clear-history-btn" style="display: none;">Clear History</button>
+          </div>
+          <div class="recent-files-list" id="recent-files-list">
+            <div class="empty-state">
+              <div class="empty-state-icon">📭</div>
+              <p class="empty-state-text">No recent files yet.<br>Open a PDF to get started!</p>
+            </div>
+          </div>
+        </section>
+      </main>
+      <footer class="footer">
+        <p>Created with love by <a href="https://github.com/ZeNx98" target="_blank" rel="noopener noreferrer">ZeNx98</a></p>
+        <div class="footer-links">
+          <a href="https://github.com/ZeNx98/FireDoc" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <span>•</span>
+          <a href="#" onclick="showKeyboardShortcuts(); return false;">Keyboard Shortcuts</a>
+          <span>•</span>
+          <a href="#" onclick="showAbout(); return false;">About</a>
+        </div>
+      </footer>
+      <div class="shortcuts-toggle" title="Keyboard Shortcuts (Press '?')">⌨️</div>
+    </div>
+
+    <script>
+      // Check if running in Electron environment
+      const isElectron = window.electronAPI !== undefined;
+      
+      // Debug logging
+      console.log('Is Electron:', isElectron);
+      console.log('electronAPI:', window.electronAPI);
+      
+      // Get DOM elements
+      const fileInput = document.getElementById('file-input');
+      const dropzone = document.getElementById('dropzone');
+      const fileInfo = document.getElementById('file-info');
+      const fileName = document.getElementById('file-name');
+      const fileSize = document.getElementById('file-size');
+      const fileStatus = document.getElementById('file-status');
+      const spinner = document.getElementById('spinner');
+
+      // Prevent default drag behaviors
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, preventDefaults, false);
+        document.body.addEventListener(eventName, preventDefaults, false);
+      });
+
+      function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      // Highlight dropzone when dragging over it
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropzone.addEventListener(eventName, highlight, false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, unhighlight, false);
+      });
+
+      function highlight(e) {
+        dropzone.classList.add('drag-over');
+      }
+
+      function unhighlight(e) {
+        dropzone.classList.remove('drag-over');
+      }
+
+      // Handle dropped files
+      dropzone.addEventListener('drop', handleDrop, false);
+
+      function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        handleFiles(files);
+      }
+
+      // Handle file selection event
+      fileInput.addEventListener('change', function(event) {
+        handleFiles(event.target.files);
+      });
+
+      // If in Electron, intercept the file input label click to use native dialog
+      if (isElectron) {
+        const fileInputLabel = document.querySelector('.file-input-label');
+        fileInputLabel.addEventListener('click', async function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          
+          const filePath = await window.electronAPI.selectPDF();
+          if (filePath) {
+            // In Electron, we have the file path directly
+            // We still need to create a File object for preview generation
+            // But we'll also store the path for reopening
+            handleElectronFile(filePath);
+          }
+        });
+      }
+
+      async function handleElectronFile(filePath) {
+        try {
+          const result = window.electronAPI.readPDF && window.electronAPI.readPDF(filePath);
+          if (!result || result.error) {
+            throw new Error(result && result.error ? result.error : 'readPDF unavailable');
+          }
+          const bytes = new Uint8Array(result.arrayBuffer);
+          const blob = new Blob([bytes], { type: 'application/pdf' });
+          const fileName = result.name || (filePath.split('/').pop() || filePath.split('\\').pop());
+          const file = new File([blob], fileName, { type: 'application/pdf' });
+          file.electronPath = filePath;
+
+          // Display the actual file size if available
+          file._originalSize = result.size;
+          displayFileInfo({ ...file, size: result.size || file.size });
+          handleFile(file);
+        } catch (error) {
+          console.error('Error creating preview file:', error);
+          window.electronAPI.openPDF(filePath);
+        }
+      }
+
+      function handleFiles(files) {
+        if (files.length > 0) {
+          const file = files[0];
+          
+          // Validate file type
+          if (file.type !== 'application/pdf') {
+            alert('Please select a valid PDF file.');
+            return;
+          }
+          
+          displayFileInfo(file);
+          handleFile(file);
+        }
+      }
+
+      function displayFileInfo(file) {
+        // Format file size
+        const bytes = (file._originalSize || file.size);
+        const sizeInKB = (bytes / 1024).toFixed(2);
+        const sizeInMB = (bytes / 1024 / 1024).toFixed(2);
+        const displaySize = bytes > 1048576 ? `${sizeInMB} MB` : `${sizeInKB} KB`;
+        
+        // Update file info
+        fileName.textContent = file.name;
+        fileSize.textContent = displaySize;
+        fileStatus.textContent = 'Opening...';
+        
+        // Show file info
+        fileInfo.classList.add('active');
+        
+        // Show spinner
+        spinner.classList.add('active');
+      }
+      
+      function handleFile(file) {
+        console.log('handleFile called with:', file);
+        // Save to recent files before opening (this will generate and store thumbnail)
+        saveToRecentFiles(file);
+        
+        // In Electron, use the electronAPI to open the PDF
+        if (isElectron && window.electronAPI && window.electronAPI.openPDF) {
+          // Electron environment - use IPC to open in new window
+          setTimeout(() => {
+            // Use the electron path if available, otherwise try file.path (from drag-drop)
+            const filePath = file.electronPath || file.path;
+            console.log('Attempting to open PDF with path:', filePath);
+            if (filePath) {
+              window.electronAPI.openPDF(filePath);
+            } else {
+              console.error('No file path available. file.electronPath:', file.electronPath, 'file.path:', file.path);
+              alert('Unable to open file: No file path available');
+            }
+          }, 500);
+        } else {
+          // Browser environment - use blob URL with PDF.js viewer
+          const fileURL = URL.createObjectURL(file);
+          setTimeout(() => {
+            // Open using the local PDF.js viewer
+            window.location.href = `pdfjs/web/viewer.html?file=${encodeURIComponent(fileURL)}`;
+          }, 500);
+        }
+      }
+
+      // IndexedDB is no longer used for storing files
+      // We only store thumbnails in localStorage now
+      let db = null; // Keep for backwards compatibility but not used
+      
+      function initIndexedDB() {
+        // IndexedDB no longer needed - we store only thumbnails in localStorage
+        return Promise.resolve(null);
+      }
+
+      // Removed storeFileInIndexedDB, updateRecentFileWithId, getFileFromIndexedDB
+      // These are no longer needed since we only store thumbnails
+
+      // Recent Files Management
+      const MAX_RECENT_FILES = 10;
+      // Removed file size limits since we're only storing thumbnails now
+
+      function saveToRecentFiles(file) {
+        const recentFiles = getRecentFiles();
+        
+        // Generate preview for all files (thumbnails are small even for large PDFs)
+        createFilePreview(file).then(previewData => {
+          const fileData = {
+            name: file.name,
+            size: file.size,
+            timestamp: Date.now(),
+            type: file.type,
+            preview: previewData
+          };
+          
+          // In Electron, also store the file path for reopening
+          if (isElectron && (file.electronPath || file.path)) {
+            fileData.filePath = file.electronPath || file.path;
+          }
+          
+          // Remove duplicate if exists
+          const filteredFiles = recentFiles.filter(f => f.name !== file.name || f.size !== file.size);
+          
+          // Add to beginning of array
+          filteredFiles.unshift(fileData);
+          
+          // Keep only MAX_RECENT_FILES
+          const limitedFiles = filteredFiles.slice(0, MAX_RECENT_FILES);
+          
+          // Save to localStorage
+          try {
+            localStorage.setItem('firedoc_recent_files', JSON.stringify(limitedFiles));
+          } catch (e) {
+            // If localStorage is full, try to reduce thumbnail quality or remove old thumbnails
+            console.warn('localStorage full, optimizing storage');
+            
+            // Remove thumbnails from older files to save space
+            const filesWithLimitedPreviews = limitedFiles.map((f, idx) => {
+              if (idx > 4) { // Keep previews for first 5 files only
+                return {
+                  ...f,
+                  preview: { hasPreview: false, message: 'Preview removed to save space' }
+                };
+              }
+              return f;
+            });
+            
+            try {
+              localStorage.setItem('firedoc_recent_files', JSON.stringify(filesWithLimitedPreviews));
+            } catch (e2) {
+              // Last resort: keep only 3 recent files
+              const reducedFiles = limitedFiles.slice(0, 3);
+              try {
+                localStorage.setItem('firedoc_recent_files', JSON.stringify(reducedFiles));
+              } catch (e3) {
+                console.error('Failed to save to localStorage even with minimal data:', e3);
+              }
+            }
+          }
+        }).catch(err => {
+          console.error('Error creating preview:', err);
+          // Save without preview
+          const fileData = {
+            name: file.name,
+            size: file.size,
+            timestamp: Date.now(),
+            type: file.type,
+            preview: {
+              hasPreview: false,
+              message: 'Preview generation failed'
+            }
+          };
+          
+          // In Electron, also store the file path for reopening
+          if (isElectron && (file.electronPath || file.path)) {
+            fileData.filePath = file.electronPath || file.path;
+          }
+          
+          const filteredFiles = recentFiles.filter(f => f.name !== file.name || f.size !== file.size);
+          filteredFiles.unshift(fileData);
+          const limitedFiles = filteredFiles.slice(0, MAX_RECENT_FILES);
+          
+          try {
+            localStorage.setItem('firedoc_recent_files', JSON.stringify(limitedFiles));
+          } catch (e) {
+            console.error('Failed to save to localStorage:', e);
+          }
+        });
+      }
+
+      // Create a preview thumbnail from PDF file (only first page)
+      function createFilePreview(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          
+          // For large files, only read the first portion (first 5MB should contain first page)
+          const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB
+          const bytesToRead = Math.min(file.size, CHUNK_SIZE);
+          const fileSlice = file.slice(0, bytesToRead);
+          
+          console.log(`Reading first ${(bytesToRead / 1024 / 1024).toFixed(2)} MB of ${(file.size / 1024 / 1024).toFixed(2)} MB file`);
+          
+          // Set a timeout for preview generation (15 seconds max)
+          const timeoutId = setTimeout(() => {
+            reader.abort();
+            resolve({
+              hasPreview: false,
+              message: 'Preview generation timed out'
+            });
+          }, 15000);
+          
+          reader.onload = async function(e) {
+            clearTimeout(timeoutId);
+            
+            try {
+              // PDF.js is loaded and configured by pdf-loader.js
+              if (typeof pdfjsLib !== 'undefined') {
+                
+                // Load PDF with the partial data
+                const loadingTask = pdfjsLib.getDocument({
+                  data: e.target.result,
+                  // Don't try to load the whole file, just use what we have
+                  length: file.size,
+                  disableAutoFetch: true,
+                  disableStream: false,
+                  rangeChunkSize: 65536
+                });
+                
+                // Set up promise timeout
+                const pdfPromise = loadingTask.promise;
+                const timeoutPromise = new Promise((_, reject) => 
+                  setTimeout(() => reject(new Error('PDF loading timeout')), 10000)
+                );
+                
+                const pdf = await Promise.race([pdfPromise, timeoutPromise]);
+                
+                // Get first page only
+                const page = await pdf.getPage(1);
+                
+                // Set up canvas for rendering - small scale for thumbnails
+                const scale = 0.5;
+                const viewport = page.getViewport({scale: scale});
+                
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                
+                // Render PDF page to canvas
+                const renderContext = {
+                  canvasContext: context,
+                  viewport: viewport
+                };
+                
+                await page.render(renderContext).promise;
+                
+                // Clean up
+                await pdf.destroy();
+                
+                // Convert canvas to data URL with lower quality to save space
+                const thumbnail = canvas.toDataURL('image/jpeg', 0.5);
+                
+                console.log(`Preview generated successfully for ${file.name}`);
+                
+                resolve({
+                  hasPreview: true,
+                  thumbnail: thumbnail
+                });
+              } else {
+                // PDF.js not loaded, return without preview
+                resolve({
+                  hasPreview: false,
+                  message: 'PDF.js not loaded'
+                });
+              }
+            } catch (error) {
+              console.error('Error generating PDF preview:', error);
+              resolve({
+                hasPreview: false,
+                message: `Preview failed: ${error.message}`
+              });
+            }
+          };
+          
+          reader.onerror = function(e) {
+            clearTimeout(timeoutId);
+            console.error('FileReader error:', e);
+            resolve({
+              hasPreview: false,
+              message: 'Failed to read file'
+            });
+          };
+          
+          reader.onabort = function() {
+            clearTimeout(timeoutId);
+            resolve({
+              hasPreview: false,
+              message: 'Preview generation aborted'
+            });
+          };
+          
+          // Read only the first chunk of the file (not the entire file!)
+          try {
+            reader.readAsArrayBuffer(fileSlice);
+          } catch (error) {
+            clearTimeout(timeoutId);
+            console.error('Failed to read file chunk:', error);
+            resolve({
+              hasPreview: false,
+              message: 'Failed to start reading file'
+            });
+          }
+        });
+      }
+
+      function getRecentFiles() {
+        const stored = localStorage.getItem('firedoc_recent_files');
+        return stored ? JSON.parse(stored) : [];
+      }
+
+      function formatFileSize(bytes) {
+        const sizeInKB = (bytes / 1024).toFixed(2);
+        const sizeInMB = (bytes / 1024 / 1024).toFixed(2);
+        return bytes > 1048576 ? `${sizeInMB} MB` : `${sizeInKB} KB`;
+      }
+
+      function formatTimestamp(timestamp) {
+        const now = Date.now();
+        const diff = now - timestamp;
+        const seconds = Math.floor(diff / 1000);
+        const minutes = Math.floor(seconds / 60);
+        const hours = Math.floor(minutes / 60);
+        const days = Math.floor(hours / 24);
+        
+        if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
+        if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+        if (minutes > 0) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+        return 'Just now';
+      }
+
+      function displayRecentFiles() {
+        const recentFiles = getRecentFiles();
+        const recentFilesList = document.getElementById('recent-files-list');
+        const clearHistoryBtn = document.getElementById('clear-history-btn');
+        
+        if (recentFiles.length === 0) {
+          recentFilesList.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon">📭</div>
+              <p class="empty-state-text">No recent files yet.<br>Open a PDF to get started!</p>
+            </div>
+          `;
+          clearHistoryBtn.style.display = 'none';
+          return;
+        }
+        
+        clearHistoryBtn.style.display = 'block';
+        
+        recentFilesList.innerHTML = recentFiles.map((file, index) => `
+          <div class="recent-file-item" data-index="${index}">
+            <div class="recent-file-info">
+              <div class="recent-file-thumbnail">
+                ${file.preview && file.preview.thumbnail ? 
+                  `<img src="${file.preview.thumbnail}" alt="${escapeHtml(file.name)}">` :
+                  `<div class="recent-file-thumbnail-placeholder">
+                    <div>📄</div>
+                    <div class="recent-file-thumbnail-text">PDF</div>
+                  </div>`
+                }
+              </div>
+              <div class="recent-file-details">
+                <div class="recent-file-name">${escapeHtml(file.name)}</div>
+                <div class="recent-file-meta">
+                  <span>${formatFileSize(file.size)}</span>
+                  <span>•</span>
+                  <span>${formatTimestamp(file.timestamp)}</span>
+                </div>
+              </div>
+            </div>
+            <div class="recent-file-actions">
+              <button class="action-btn delete" onclick="deleteRecentFile(${index}); event.stopPropagation();" title="Remove from history">🗑️</button>
+            </div>
+          </div>
+        `).join('');
+        
+        // Add click handlers to recent file items
+        document.querySelectorAll('.recent-file-item').forEach(item => {
+          item.addEventListener('click', function() {
+            const index = parseInt(this.dataset.index);
+            reopenRecentFile(index);
+          });
+        });
+      }
+
+      function reopenRecentFile(index) {
+        const recentFiles = getRecentFiles();
+        const file = recentFiles[index];
+        
+        if (file) {
+          // In Electron, if we have the file path stored, open it directly
+          if (isElectron && file.filePath && window.electronAPI) {
+            window.electronAPI.openPDF(file.filePath);
+          } else {
+            // Otherwise, ask user to browse for it
+            if (confirm(`📄 ${file.name}\n\nPlease select this file to open it.\n\nWould you like to browse for it?`)) {
+              fileInput.click();
+            }
+          }
+        }
+      }
+
+      function deleteRecentFile(index) {
+        const recentFiles = getRecentFiles();
+        recentFiles.splice(index, 1);
+        localStorage.setItem('firedoc_recent_files', JSON.stringify(recentFiles));
+        displayRecentFiles();
+      }
+
+      function clearAllRecentFiles() {
+        if (confirm('Are you sure you want to clear all recent files?')) {
+          localStorage.removeItem('firedoc_recent_files');
+          displayRecentFiles();
+        }
+      }
+
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      // Initialize recent files display
+      document.addEventListener('DOMContentLoaded', function() {
+        // Initialize IndexedDB first
+        initIndexedDB().then(() => {
+          console.log('IndexedDB initialized');
+          displayRecentFiles();
+        }).catch(err => {
+          console.error('Failed to initialize IndexedDB:', err);
+          displayRecentFiles();
+        });
+      });
+
+      // Clear history button handler
+      document.getElementById('clear-history-btn').addEventListener('click', clearAllRecentFiles);
+
+      // Keyboard shortcuts
+      document.addEventListener('keydown', function(e) {
+        // Press '?' or '/' to show keyboard shortcuts
+        if (e.key === '?' || (e.key === '/' && !e.shiftKey)) {
+          e.preventDefault();
+          showKeyboardShortcuts();
+        }
+        
+        // Press 'o' or 'O' to open file dialog
+        if (e.key === 'o' || e.key === 'O') {
+          e.preventDefault();
+          fileInput.click();
+        }
+      });
+
+      function showKeyboardShortcuts() {
+        const shortcuts = `
+Keyboard Shortcuts:
+• O - Open file dialog
+• ? or / - Show this help
+• Drag & Drop - Drop PDF files anywhere
+        `;
+        alert(shortcuts.trim());
+      }
+
+      function showAbout() {
+  const about = `
+FireDoc - Minimalist PDF Viewer\n\n
+Version: 2.0.0
+Created by: ZeNx98 (https://github.com/ZeNx98)
+Contact: zenx98x@gmail.com
+
+A clean and simple PDF viewer that respects your privacy.
+All files are processed locally on your device.
+No data is sent to any server.
+  `;
+        alert(about.trim());
+      }
+
+      // Add click handler to shortcuts toggle button
+      document.querySelector('.shortcuts-toggle').addEventListener('click', showKeyboardShortcuts);
+
+      // Welcome message in console
+      console.log('%cFireDoc PDF Viewer', 'color: #5865f2; font-size: 20px; font-weight: bold;');
+      console.log('%cWelcome! Press ? for keyboard shortcuts', 'color: #93969b; font-size: 14px;');
+    </script>
+  </body>
+</html>
