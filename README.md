@@ -90,23 +90,12 @@ chmod +x FireDoc-2.0.0-x86_64.AppImage
 
 **Contributions are welcome!** We'd especially love help with:
 
-- ** Supporting more platforms** — Windows and macOS builds
-- ** Translations** — Multi-language support
-- ** UI/UX improvements** — Design enhancements and accessibility
-- ** Bug fixes** — Testing and reporting issues
-- ** Documentation** — Better guides and tutorials
-
-### How to Contribute
-
-1. **Fork** the repository
-2. **Create a branch** for your feature: `git checkout -b feature/amazing-feature`
-3. **Make your changes** and test with `npm run start`
-4. **Commit** your changes: `git commit -m 'Add amazing feature'`
-5. **Push** to your fork: `git push origin feature/amazing-feature`
-6. **Open a Pull Request** describing your changes
-
-Please keep changes focused and well-documented. Small, incremental improvements are easier to review!
-
+- **Supporting more platforms** — Windows and macOS builds
+- **Translations** — Multi-language support
+- **UI/UX improvements** — Design enhancements and accessibility
+- **Bug fixes** — Testing and reporting issues
+- **Documentation** — Better guides and tutorials
+- 
 ---
 
 ## License
